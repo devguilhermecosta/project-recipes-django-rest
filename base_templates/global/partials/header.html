@@ -1,0 +1,22 @@
+<!-- header -->
+<header>
+    <div class="container-user">
+        {% if request.user.is_authenticated %}
+            você está logado como 
+            <a href="{% url 'authors:dashboard' %}">
+                <strong>{{ request.user.username }}</strong>
+            </a>
+        {% else %}
+            <p><a aria-label="cadastrar" href="{% url 'authors:register' %}">Cadastre-se</a>
+            ou
+            <a href="{% url 'authors:login' %}">faça login</a>
+        {% endif %}
+        </p>
+    </div>
+    <div class="container-header flex-center">
+        <a href="{% url 'recipes:home' %}">
+            <span class="material-icons icon-header">flatware</span>
+            <h1 class="title-header">Recipes</h1>
+        </a>
+    </div>
+</header>

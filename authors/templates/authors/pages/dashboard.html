@@ -1,0 +1,44 @@
+{% extends 'global/base.html' %}
+
+{% block title %}Dashboard |{% endblock title %}
+
+{% block content %}
+
+<div class="form-container center-flex">
+    <h1>{{ form_title }}</h1>
+</div>
+
+{% include 'global/partials/messages.html' %}
+
+{% include 'authors/partials/messages_login.html' %}
+
+<div class="RA_container">
+    <h2>Recipes created at <strong>{{ user }}</strong></h2>
+    <ul>
+        {% for recipe in recipes %}
+            <div class="RA__div">
+                <li class="RA__item">
+                    <a href="{% url 'authors:dashboard_recipe_edit' recipe.id %}">{{ recipe.title }} - Criado em: {{ recipe.created_at|date:"d/m/Y" }}</a>
+                </li>
+                <form action="{% url 'authors:delete_recipe' %}"
+                method="POST"
+                class="RA__delete_button"
+                >
+                    {% csrf_token %}
+                    <input type="hidden" name="id" value="{{ recipe.id }}">
+                    <button type="submit">Deletar</button>
+                </form>
+            </div>
+        {% empty %}
+            <p>No recipes registred</p>
+        {% endfor %}
+    </ul>
+</div>
+
+<div class="RA__button">
+    <a href="{% url 'authors:new_recipe' %}">
+        <input type="button" value="New Recipe">
+    </a>
+</div>
+
+{% endblock content %}

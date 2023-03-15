@@ -1,0 +1,725 @@
+:root {
+    --default-font: 'Roboto Slab', serif;
+    --bg-header-footer: black;
+    --text-header-footer: white;
+    --bg-menu: #65D4EB;
+    --bg-content: #A6A6A6;
+    --bg-input-search: #828282;
+    --bg-card-details: #E6E6E6;
+    --text-white: white;
+    --text-card: #3b3b3b;
+    --text-card-details: #4b4b4b;
+    --text-message-default: #000;
+    --text-message-succes: darkgreen;
+    --text-message-info: darkgreen;
+    --text-message-error: darkred;
+    --text-message-debug: darkblue;
+    --text-message-warning: rgb(160, 89, 2);
+    --text-messages-element: white;
+    --bg-message-default: #4b4b4b;
+    --bg-message-succes: lightgreen;
+    --bg-message-info: lightgreen;
+    --bg-message-error: rgb(238, 80, 80);
+    --bg-message-debug: lightblue;
+    --bg-message-warning: rgb(219, 180, 107);
+    --bg-messages-element: darkred;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    height: 100%;
+}
+
+body {
+    font-family: var(--default-font);
+    background-color: var(--bg-content);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.container-user {
+    position: absolute;
+    top: 5px;
+    right: 15px;
+    color: var(--bg-card-details)
+}
+
+.container-user a {
+    text-decoration: none;
+    color: var(--bg-card-details);
+    font-weight: bolder;
+}
+
+.container-user a:hover {
+    text-decoration: underline;
+}
+
+.center-flex {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.nav-container {
+    width: 3px;
+    height: 100vh;
+    z-index: 100;
+    background-color: var(--bg-menu);
+    position: fixed;
+    transition: all 300ms ease-in-out;
+    overflow: hidden;
+}
+
+.container-menu-mobile {
+    color: white;
+    position: fixed;
+    top: 35px;
+    left: 0;
+    background-color: var(--bg-menu);
+    cursor: pointer;
+    transition: all 300ms ease-in-out;
+}
+
+.container-options-menu {
+    padding: 20px 15px;
+}
+
+.list-menu {
+    list-style: none;
+}
+
+.list-menu li {
+    width: 100%;
+    white-space: nowrap;
+    margin: 8px 0;
+    cursor: pointer;
+}
+
+.list-menu li a {
+    color: var(--text-header-footer);
+    font-style: none;
+    text-decoration: none;
+}
+
+header {
+    background-color: black; 
+}
+
+.container-header {
+    padding: 25px 0;
+    width: fit-content;
+}
+
+.container-header > a {
+    text-decoration: none;
+    color: var(--text-header-footer);
+    display: flex;
+    align-items: center;
+}
+
+.icon-header {
+    font-size: 32px;
+}
+
+.container-header h1 {
+    display: inline-block;
+    margin-left: 10px;
+}
+
+.flex-center {
+    margin: 0 auto;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.search-container {
+    margin: 25px 0;
+}
+
+.box-search {
+    width: 100%;
+    margin: 0 auto;
+    max-width: 640px;
+    position: relative;
+    border: 2px solid black;
+    border-radius: 4px;
+    background-color: var(--bg-input-search);
+    transition: all 200ms ease-in-out;
+}
+
+.div-space {
+    padding: 0 10px;
+}
+
+.input-search {
+    width: 100%;
+    height: 31px;
+    z-index: -1;
+    outline: none;
+    padding: 0 30px 0 10px;
+    color: var(--text-white);
+    font-size: 20px;
+    background-color: var(--bg-input-search);
+    border: none;
+}
+
+.input-search::placeholder {
+    color: var(--text-white);
+    opacity: 0.4;
+}
+
+.button-search {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    cursor: pointer;
+    background-color: var(--bg-input-search);
+    border: none;
+}
+
+.icon-search {
+    background-color: var(--bg-input-search);
+}
+
+.box-search:focus-within {
+    border: 2px solid var(--bg-menu);
+    background-color: white;
+}
+
+.box-search:focus-within .input-search {
+    color: black;
+    background-color: white;
+}
+
+.box-search:focus-within .button-search {
+    background-color: white;
+}
+
+.box-search:focus-within .icon-search {
+    color: var(--bg-menu);
+    background-color: white !important;
+}
+
+.main-content-container {
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 0 2%;
+}
+
+.main-content {
+    padding: 0 2%;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.card-container {
+    width: 100%;
+    max-width: 400px;
+    background-color: white;
+    box-shadow: -5px 5px 10px 3px rgba(0, 0, 0, 0.295);
+    border-radius: 4px;
+    overflow: hidden;
+    transition: all 300ms ease;
+}
+
+.card-container:hover {
+    transform: scale(1.03);
+    box-shadow: -5px 5px 15px 5px rgba(0, 0, 0, 0.350);
+}
+
+.card-container-view {
+    max-width: 800px;
+}
+
+.card-container-view:hover {
+    box-shadow: -5px 5px 10px 3px rgba(0, 0, 0, 0.295);
+    transform: scale(1);
+}
+
+.card-preparation-steps {
+    padding: 20px;
+    line-height: 1.5;
+    text-align: justify;
+    text-indent: 30px;
+}
+
+.card-image {
+    width: 100%;
+}
+
+.box-card-info {
+    padding: 30px 20px;
+}
+
+.box-card-info a {
+    text-decoration: none;
+    font-style: normal;
+    color: var(--text-card);
+}
+
+.card-title {
+    padding-bottom: 20px;
+}
+
+.card-details {
+    font-size: 12px;
+    font-style: italic;
+    color: var(--text-card-details);
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-flow: wrap;
+}
+
+.card-details > .prev-text-card {
+    width: 100%;
+    margin-top: 20px;
+    font-size: 16px;
+    font-style: normal;
+}
+
+.card-details > div {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+}
+
+.flex-details {
+    display: flex;
+    align-items: center;
+}
+
+.card-group {
+    cursor: pointer;
+}
+
+.card-group:hover {
+    color: var(--bg-menu);
+}
+
+.box-card-preparation {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    background-color: var(--bg-card-details);
+    padding: 10px 0;
+}
+
+.box-card-preparation div {
+    text-align: center;
+    color: var(--text-card);
+}
+
+.box-card-preparation h3 {
+    display: flex;
+    align-items: center;
+}
+
+.card-footer {
+    background-color: black;
+    padding: 15px 0;
+}
+
+.card-footer-details a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: white;
+}
+
+.card-footer:hover {
+    background-color: rgb(29, 27, 27);
+}
+
+.card-footer-details span {
+    padding-right: 10px;
+}
+
+.pagination-container {
+    width: 100%;
+    margin-top: 30px;
+    text-align: center;
+}
+
+.pagination-content {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    gap: 5px;
+}
+
+.page-link {
+    background-color: var(--bg-menu);
+}
+
+.page-item {
+    background-color: var(--bg-input-search);
+}
+
+.page-link, .page-item {
+    text-decoration: none;
+    padding: 8px 5px;
+    color: var(--text-card);
+}
+
+.current-page {
+    background-color: var(--bg-header-footer);
+    color: var(--bg-card-details);
+    font-style: bolder;
+}
+
+.footer {
+    background-color: black;
+    margin-top: 30px;
+    padding: 35px 25px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.footer a {
+    text-decoration: none;
+    color: var(--text-white);
+}
+
+.footer a:hover {
+    filter: brightness(0.8);
+}
+
+.messages {
+    max-width: 600px;
+    padding: 15px 20px;
+    margin: 0 auto;
+    margin-bottom: 5px;
+    text-align: center;
+    background-color: var(--bg-message-default);
+    border-radius: 5px;
+    color: var(--text-message-default);
+    position: relative;
+}
+
+/* .messages_element {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: var(--bg-messages-element);
+    cursor: pointer;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+
+.messages_element::before {
+    content: 'X';
+    color: var(--text-messages-element);
+    font-weight: bolder;
+    font-size: 10px;
+} */
+
+.message-debug {
+    background-color: var(--bg-message-debug);
+    color: var(--text-message-debug);
+}
+
+.message-error {
+    background-color: var(--bg-message-error);
+    color: var(--text-message-error);
+}
+
+.message-info {
+    background-color: var(--bg-message-info);
+    color: var(--text-message-info);
+}
+
+.message-succes {
+    background-color: var(--bg-message-succes);
+    color: var(--text-message-succes);
+}
+
+.message-warning {
+    background-color: var(--bg-message-warning);
+    color: var(--text-message-warning);
+}
+
+.form {
+    max-width: 650px;
+    margin-top: 30px;
+    padding-left: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    row-gap: 10px;
+}
+
+.form > div {
+    width: 50%;
+    margin-bottom: 15px;
+}
+
+.form > div > label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 18px;
+    font-weight: bolder;
+}
+
+.form > div > input {
+    width: 90%;
+    height: 50px;
+    padding: 10px 15px;
+    border-radius: 8px;
+    outline: none;
+    border: none;
+    font-size: 18px;
+}
+
+.form > div > input:focus {
+    border: 2px solid var(--bg-menu);
+}
+
+.form .errorlist {
+    color: var(--text-message-error);
+    text-decoration: none;
+    list-style-type: none;
+}
+
+.form .help-text {
+    color: var(--bg-message-default);
+}
+
+.form .button-container {
+    width: 100%;
+    text-align: center;
+}
+
+.form button[type="submit"] {
+    width: 60px;
+    padding: 10px 5px;
+    border-radius: 5px;
+    border: none;
+    background-color: var(--bg-menu);
+    color: var(--text-white);
+    cursor: pointer;
+}
+
+.RA_container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    margin-top: 30px;
+    background-color: var(--text-white);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 2px 2px 5px 3px rgba(0, 0, 0, 0.322);
+}
+
+.RA__item {
+    list-style-type: none;
+    margin: 5px 0;
+}
+
+.RA__item a {
+    color: var(--text-card);
+    font-size: 18px;
+    text-decoration: none;
+    transform: all 300ms ease;
+}
+
+.RA__item a:hover {
+    color: var(--text-message-default);
+}
+
+.RA__title {
+    margin: 0 auto;
+    text-align: center;
+}
+
+/* START FORM EDIT RECIPE*/
+
+.FR__container {
+    width: 100%;
+    max-width: 620px;
+    margin: 0 auto;
+}
+
+.FR__form {
+    width: 100%;
+    max-width: 620px;
+    padding: 5px 10px;
+}
+
+.FR__div {
+    width: 100%;
+    max-width: 600px;
+    margin: 10px 0;
+}
+
+.FR__div > label {
+    font-size: 18px;
+    font-weight: bolder;
+}
+
+.FR__div > input {
+    width: 100%;
+    height: 40px;
+    padding: 0 5px;
+    font-size: 16px;
+    border: 1px solid var(--bg-input-search);
+    border-radius: 10px;
+    outline: none;
+}
+
+.FR__div > textarea {
+    width: 100%;
+    display: block;
+    padding: 10px;
+    font-size: 16px;
+    line-height: 1.5;
+    resize: none;
+}
+
+.FR__div:nth-of-type(9) {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: left;
+}
+
+.FR__div > a {
+    width: 100%;
+    max-width: 100%;
+    margin: 10px 0;
+    font-size: 14px;
+    text-decoration: none;
+    word-break: break-all;
+}
+
+.FR__div input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    margin-bottom: 10px;
+    display: inline;
+    width: 30px;
+}
+
+.FR__div input[type="file"] {
+    border: none;
+    outline: none;
+    padding: 0;
+    border-radius: 0;
+}
+
+.FR__button {
+    text-align: center;
+}
+
+.FR__button button[type="submit"] {
+    width: 60px;
+    height: 45px;
+    background-color: var(--bg-menu);
+    border: none;
+    outline: none;
+    border-radius: 10px;
+    color: var(--bg-card-details);
+    font-weight: bolder;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.FR__button button[type="submit"]:hover {
+    opacity: 0.6;
+}
+
+.RF__image > img {
+    max-width: 100%;
+}
+
+.RA__button {
+    margin: 0 auto;
+    margin-top: 30px;
+    text-align: center;
+}
+
+.RA__button input {
+    width: 110px;
+    height: 45px;
+    background-color: var(--bg-menu);
+    border: none;
+    outline: none;
+    border-radius: 10px;
+    color: var(--bg-card-details);
+    font-weight: bolder;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.RA__button input:hover {
+    opacity: 0.6;
+}
+
+.RA__div {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.RA__delete_button button {
+    background-color: transparent;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    color: darkred;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 300ms ease;
+}
+
+.RA__delete_button button:hover {
+    color: darkorange;
+} 
+
+.errorlist {
+    list-style-type: none;
+    color: rgb(164, 1, 1);
+}
+
+/* END FORM EDIT RECIPE */
+
+input[id="id_password"] {
+    display: block;
+}
+
+@media screen and (max-width: 360px) {
+    .footer a {
+        margin: 0 auto;
+    }
+
+    .form > div {
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 1024px) {
+    .card-container {
+        max-width: 300px;
+    }
+}
