@@ -62,7 +62,7 @@ class RecipesHomeViewTest(RecipeTestBase):
 
         #  I edited the environment variable PER_PAGE to have 3 objects per page.  # noqa: E501
         #  As we have 18 recipes, we will have 6 pages
-        with patch('recipes.views.all.PER_PAGE', new=3):
+        with patch('recipes.views.site.PER_PAGE', new=3):
             client: Client = Client()
             response: HttpResponse = client.get(
                 reverse('recipes:home')
