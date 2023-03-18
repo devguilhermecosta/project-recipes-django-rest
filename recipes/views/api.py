@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.request import HttpRequest
 from rest_framework import status
 from django.shortcuts import get_object_or_404  # noqa: F401
+from django.http import Http404
 from recipes.models import Recipe
 from recipes.serializers import RecipeSerializer, TagSerializer
 from tag.models import Tag
@@ -20,16 +21,35 @@ Criando uma FBV para retornar uma lista de objetos:
     many=True;
 5 - Retornar uma Response com serilizer.data como atributo;
 """
-@api_view()  # noqa: E302
+@api_view(http_method_names=['get', 'post'])  # noqa: E302
 def api_recipes_list(request: HttpRequest) -> Response:
-    recipes = Recipe.objects.get_published()
-    serializer = RecipeSerializer(
-        instance=recipes,
-        many=True,
-        context={'request': request},
-        )
 
-    return Response(serializer.data)
+    match request.method:
+        case 'GET':
+            recipes = Recipe.objects.get_published()
+            serializer = RecipeSerializer(
+                instance=recipes,
+                many=True,
+                context={'request': request},
+                )
+
+            return Response(serializer.data)
+
+        case 'POST':
+            serializer = RecipeSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(
+                    serializer.validated_data,
+                    status=status.HTTP_201_CREATED,
+                )
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        case _:
+            raise Http404()
 
 
 """
