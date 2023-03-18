@@ -4,7 +4,8 @@ from rest_framework.request import HttpRequest
 from rest_framework import status
 from django.shortcuts import get_object_or_404  # noqa: F401
 from recipes.models import Recipe
-from recipes.serializers import RecipeSerializer
+from recipes.serializers import RecipeSerializer, TagSerializer
+from tag.models import Tag
 
 
 """
@@ -22,7 +23,11 @@ Criando uma FBV para retornar uma lista de objetos:
 @api_view()  # noqa: E302
 def api_recipes_list(request: HttpRequest) -> Response:
     recipes = Recipe.objects.get_published()
-    serializer = RecipeSerializer(instance=recipes, many=True)
+    serializer = RecipeSerializer(
+        instance=recipes,
+        many=True,
+        context={'request': request},
+        )
 
     return Response(serializer.data)
 
@@ -67,14 +72,16 @@ Método 2 -> personalizando o retorno:
 """
 @api_view()  # noqa: E302
 def api_recipes_detail(request: HttpRequest, pk: int) -> Response:
-    # recipe = get_object_or_404(
-    #     Recipe.objects.get_published(),
-    #     pk=pk,
-    #     )
+    """
+    recipe = get_object_or_404(
+        Recipe.objects.get_published(),
+        pk=pk,
+        )
 
-    # serializer = RecipeSerializer(instance=recipe)
+    serializer = RecipeSerializer(instance=recipe)
 
-    # return Response(data=serializer.data)
+    return Response(data=serializer.data)
+    """
 
     recipe: Recipe = Recipe.objects.get_published().filter(pk=pk).first()
     serializer = RecipeSerializer(instance=recipe)
@@ -85,3 +92,19 @@ def api_recipes_detail(request: HttpRequest, pk: int) -> Response:
         return Response({
             "details": "not found",
         }, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view()
+def tag_api_detail(request: HttpRequest, pk: int) -> Response:
+    tag = get_object_or_404(
+        Tag.objects.all(),
+        pk=pk,
+    )
+
+    serializer: TagSerializer = TagSerializer(
+        instance=tag,
+        many=False,
+        context={'request': request},
+    )
+
+    return Response(serializer.data)
