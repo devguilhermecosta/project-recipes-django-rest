@@ -9,7 +9,21 @@ class TagSerializer(serializers.Serializer):
     slug = serializers.SlugField()
 
 
+# leia mais abaixo sobre o uso de ModelSerializer
 class RecipeSerializer(serializers.Serializer):
+    """
+        OBSERVAÇÃO IMPORTANTE:
+
+        Ao permitir a criação de novos objetos, temos a possibilidade
+        de permitir que alguns atributos de classe sejam somente
+        do tipo 'leitura', isto é, o usuário não poderá enviar este
+        campo preenchido para o back-end.
+        Para todo field que desejamos ser somente leitura, adicionar o
+        atributo 'read_only=True',
+        Qualquer field aceita este argumento.
+
+    """
+
     id = serializers.IntegerField()
     title = serializers.CharField(max_length=65)
     description = serializers.CharField(max_length=165)
@@ -141,3 +155,67 @@ class RecipeSerializer(serializers.Serializer):
 
     def any_method_name(self, recipe: Recipe):
         return f'{recipe.preparation_time} {recipe.preparation_time_unit}'
+
+
+"""
+    Herdando de serializers.ModelSerializer
+
+    Quando uma classe herda de ModelSerializer, isso nos poupa
+    de reescrever os fields já prontos no model.
+    O seu uso é muito simples:
+
+    1 - Declarar uma class Meta contendo o atributo de classe
+        'model' e 'fields'.
+        Embora em 'fields' seja possível o uso do valor __all__,
+        não recomendo isso, pois podemos expor dados não desejados;
+
+    2 - Fields do tipo PrimaryKeyRelatedField, isto é, fields do model
+        do tipo ForeingKey, não precisam ser redeclarados, a menos
+        que desejamos renomear o field;
+
+    3 - Ao criar fields personalizados, os mesmos devem ser adicionados
+        no atribudo de classe 'fields' na ordem que desejamos que sejam
+        exibidos no front-end.
+
+class RecipeSerializer(serializers.ModelSerializer):  # noqa: E302
+    class Meta:
+        model = Recipe
+        fields = [
+            'id',
+            'title',
+            'description',
+            'public',
+            'preparation',
+            'category_name',
+            'author',
+            'tag_objects',
+            'tag_links',
+        ]
+
+    public = serializers.BooleanField(source='is_published')
+
+    preparation = serializers.SerializerMethodField(
+        method_name='any_method_name',
+        )
+
+    category_name = serializers.StringRelatedField(
+        source='category'
+    )
+
+    author = serializers.StringRelatedField()
+
+    tag_objects = TagSerializer(
+        source='tags',
+        many=True,
+    )
+
+    tag_links = serializers.HyperlinkedRelatedField(
+        queryset=Tag.objects.all(),
+        many=True,
+        source='tags',
+        view_name='recipes:api_v2_tag',
+    )
+
+    def any_method_name(self, recipe: Recipe):
+        return f'{recipe.preparation_time} {recipe.preparation_time_unit}'
+"""

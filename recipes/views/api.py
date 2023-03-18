@@ -84,7 +84,10 @@ def api_recipes_detail(request: HttpRequest, pk: int) -> Response:
     """
 
     recipe: Recipe = Recipe.objects.get_published().filter(pk=pk).first()
-    serializer = RecipeSerializer(instance=recipe)
+    serializer = RecipeSerializer(
+        instance=recipe,
+        context={'request': request},
+        )
 
     if recipe:
         return Response(data=serializer.data)
