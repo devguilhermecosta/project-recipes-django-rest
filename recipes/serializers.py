@@ -94,10 +94,12 @@ class RecipeSerializer(serializers.Serializer):
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(),
         many=True,
+        default='',
     )
     tag_objects = TagSerializer(
         source='tags',
         many=True,
+        default='',
     )
 
     """
@@ -151,10 +153,56 @@ class RecipeSerializer(serializers.Serializer):
         many=True,
         source='tags',
         view_name='recipes:api_v2_tag',
+        default='',
     )
 
     def any_method_name(self, recipe: Recipe):
         return f'{recipe.preparation_time} {recipe.preparation_time_unit}'
+
+    """
+    Validando dados do serializer:
+    - A validação funciona como a validação dos models do Django.
+    - Podemos ter um método chamado 'validate', usado para validar
+      um campo que depende do outro, e podemos usar os métodos
+      validate_<nome_do_field> para validar um fild individual.
+    - Quando usado 'validate', não é preciso usar um defaultdict
+      para mapear os erros, mas sim criar um dicionário com os erros
+      por field como valor de serializers.ValidationError.
+    - Por fim, o ValidationError a ser usado deve partir de serializers,
+      e o valor de cada chave deve ser uma lista e não string, pois
+      podemos adicionar vários erros na mesma chave.
+    """
+    def validate(self, attrs):
+        super_validate = super().validate(attrs)
+
+        title = attrs.get('title')
+        description = attrs.get('description')
+
+        if title == description:
+            raise serializers.ValidationError(
+                {
+                    "title": ["o título não pode ser igual a descrição"],
+                    "description":
+                        ["a descrição não pode ser igual ao título"],
+                }
+            )
+
+        return super_validate
+
+    def validate_title(self, value):
+        title = value
+
+        if len(title) < 5:
+            raise serializers.ValidationError(
+                'O título precisa ter pelo menos 5 caracteres.'
+            )
+
+        if title == 'qualquer coisa':
+            raise serializers.ValidationError(
+                "o título não pode ser 'qualquer coisa'."
+            )
+
+        return title
 
 
 """
