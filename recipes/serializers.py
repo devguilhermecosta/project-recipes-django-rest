@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from . models import Recipe, Category
 from tag.models import Tag
+from authors.validators import AuthorRecipeValidation
 
 
 class TagSerializer(serializers.Serializer):
@@ -27,7 +28,8 @@ class RecipeSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     title = serializers.CharField(max_length=65)
     description = serializers.CharField(max_length=165)
-
+    preparation_time = serializers.IntegerField()
+    servings = serializers.IntegerField()
     """
     Como renomear o field do model.
     Vamos usar como exemplo o field is_published.
@@ -175,34 +177,10 @@ class RecipeSerializer(serializers.Serializer):
     def validate(self, attrs):
         super_validate = super().validate(attrs)
 
-        title = attrs.get('title')
-        description = attrs.get('description')
-
-        if title == description:
-            raise serializers.ValidationError(
-                {
-                    "title": ["o título não pode ser igual a descrição"],
-                    "description":
-                        ["a descrição não pode ser igual ao título"],
-                }
-            )
+        AuthorRecipeValidation(data=attrs,
+                               error_class=serializers.ValidationError)
 
         return super_validate
-
-    def validate_title(self, value):
-        title = value
-
-        if len(title) < 5:
-            raise serializers.ValidationError(
-                'O título precisa ter pelo menos 5 caracteres.'
-            )
-
-        if title == 'qualquer coisa':
-            raise serializers.ValidationError(
-                "o título não pode ser 'qualquer coisa'."
-            )
-
-        return title
 
 
 """

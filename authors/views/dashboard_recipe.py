@@ -18,7 +18,7 @@ class DashboardRecipe(View):
         recipe = None
 
         if id is not None:
-            recipe = Recipe.objects.get(pk=id,
+            recipe = Recipe.objects.get(id=id,
                                         author=self.request.user,
                                         is_published=False,
                                         )
@@ -66,7 +66,7 @@ class DashboardRecipe(View):
                 reverse('authors:dashboard_recipe_edit', args=(recipe.id,))
                 )
 
-        self.render_recipe(form)
+        return self.render_recipe(form)
 
 
 @method_decorator(
