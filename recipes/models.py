@@ -8,7 +8,9 @@ from project.settings import MEDIA_ROOT
 from django.db.models import F, Value
 from django.db.models.functions import Concat
 from PIL import Image
+from random import SystemRandom
 import os
+import string as st
 
 
 class Category(models.Model):
@@ -93,12 +95,14 @@ class Recipe(models.Model):
                            quality=100,
                            )
 
-    def save(self, *args, **kwars) -> None:
-        if not self.slug:
-            slug = f'{slugify(self.title)}'
-            self.slug = slug
-
-        save = super().save(*args, **kwars)
+    def save(self, *args, **kwargs) -> None:
+        range_letter: str = ''.join(
+            SystemRandom().choices(
+                st.ascii_letters + st.digits,
+                k=5
+            ),
+            )
+        self.slug = slugify(f'{self.title}-{range_letter}')
 
         if self.cover:
             try:
@@ -106,4 +110,4 @@ class Recipe(models.Model):
             except FileNotFoundError:
                 ...
 
-        return save
+        return super().save(*args, **kwargs)

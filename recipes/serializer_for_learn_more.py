@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from . models import Recipe
+from .models import Recipe, Category
 from tag.models import Tag
 from authors.validators import AuthorRecipeValidation
 
@@ -11,29 +11,25 @@ class TagSerializer(serializers.Serializer):
 
 
 # leia mais abaixo sobre o uso de ModelSerializer
-class RecipeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Recipe
-        fields = [
-            'id',
-            'public',
-            'title',
-            'description',
-            'slug',
-            'servings',
-            'servings_unit',
-            'preparation_steps',
-            'preparation_steps_is_html',
-            'preparation',
-            'created_at',
-            'updated_at',
-            'cover',
-            'category',
-            'author',
-            'tags',
-            'tag_objects',
-            'tag_links',
-        ]
+class RecipeSerializer(serializers.Serializer):
+    """
+        OBSERVAÇÃO IMPORTANTE:
+
+        Ao permitir a criação de novos objetos, temos a possibilidade
+        de permitir que alguns atributos de classe sejam somente
+        do tipo 'leitura', isto é, o usuário não poderá enviar este
+        campo preenchido para o back-end.
+        Para todo field que desejamos ser somente leitura, adicionar o
+        atributo 'read_only=True',
+        Qualquer field aceita este argumento.
+
+    """
+
+    id = serializers.IntegerField()
+    title = serializers.CharField(max_length=65)
+    description = serializers.CharField(max_length=165)
+    preparation_time = serializers.IntegerField()
+    servings = serializers.IntegerField()
     """
     Como renomear o field do model.
     Vamos usar como exemplo o field is_published.
@@ -47,9 +43,9 @@ class RecipeSerializer(serializers.ModelSerializer):
     Exemplo: get_preparation.
     Você pode colocar qualquer nome usando o atributo method_name.
     """
-    # preparation = serializers.SerializerMethodField(
-    #     method_name='any_method_name',
-    #     )
+    preparation = serializers.SerializerMethodField(
+        method_name='any_method_name',
+        )
 
     """
     Serializando fields do tipo foreingkey.
@@ -67,11 +63,14 @@ class RecipeSerializer(serializers.ModelSerializer):
     e de mesmo nome do field do model.
     Ex.: category = serilizers.StringRelatedField()
     """
-    category = serializers.StringRelatedField()
-    author = serializers.StringRelatedField()
-    preparation = serializers.IntegerField(
-        source='preparation_time'
+    category = serializers.PrimaryKeyRelatedField(
+        queryset=Category.objects.all(),
     )
+    category_name = serializers.StringRelatedField(
+        source='category'
+    )
+
+    author = serializers.StringRelatedField()
 
     """
     Serializando objetos com relationship type many-to-many.
@@ -99,7 +98,6 @@ class RecipeSerializer(serializers.ModelSerializer):
         many=True,
         default='',
     )
-
     tag_objects = TagSerializer(
         source='tags',
         many=True,
@@ -160,8 +158,8 @@ class RecipeSerializer(serializers.ModelSerializer):
         default='',
     )
 
-    # def any_method_name(self, recipe: Recipe):
-    #     return f'{recipe.preparation_time} {recipe.preparation_time_unit}'
+    def any_method_name(self, recipe: Recipe):
+        return f'{recipe.preparation_time} {recipe.preparation_time_unit}'
 
     """
     Validando dados do serializer:
@@ -177,12 +175,6 @@ class RecipeSerializer(serializers.ModelSerializer):
       podemos adicionar vários erros na mesma chave.
     """
     def validate(self, attrs):
-        if self.instance is not None and attrs.get('servings') is None:
-            attrs['servings'] = self.instance.servings
-
-        if self.instance is not None and attrs.get('preparation_time') is None:
-            attrs['preparation_time'] = self.instance.preparation_time
-
         super_validate = super().validate(attrs)
 
         AuthorRecipeValidation(data=attrs,

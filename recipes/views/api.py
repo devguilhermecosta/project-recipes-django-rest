@@ -37,15 +37,11 @@ def api_recipes_list(request: HttpRequest) -> Response:
 
         case 'POST':
             serializer = RecipeSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(
-                    serializer.validated_data,
-                    status=status.HTTP_201_CREATED,
-                )
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
             return Response(
-                serializer.errors,
-                status=status.HTTP_400_BAD_REQUEST,
+                serializer.data,
+                status=status.HTTP_201_CREATED,
             )
 
         case _:
@@ -90,31 +86,42 @@ Método 2 -> personalizando o retorno:
                 "details": "not found",
             }, status=status.HTTP_404_NOT_FOUND)
 """
-@api_view()  # noqa: E302
+@api_view(http_method_names=['get', 'patch', 'delete'])  # noqa: E302
 def api_recipes_detail(request: HttpRequest, pk: int) -> Response:
-    """
-    recipe = get_object_or_404(
+    recipe: Recipe = get_object_or_404(
         Recipe.objects.get_published(),
         pk=pk,
         )
 
-    serializer = RecipeSerializer(instance=recipe)
+    if request.method == 'GET':
+        serializer = RecipeSerializer(
+            instance=recipe,
+            many=False,
+            context={'request': request},
+            )
+        return Response(data=serializer.data)
 
-    return Response(data=serializer.data)
-    """
+    elif request.method == 'PATCH':
+        serializer = RecipeSerializer(
+            instance=recipe,
+            data=request.data,
+            many=False,
+            partial=True,
+            context={'request': request},
+            )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(
+            data=serializer.data,
+            status=status.HTTP_201_CREATED,
+            )
 
-    recipe: Recipe = Recipe.objects.get_published().filter(pk=pk).first()
-    serializer = RecipeSerializer(
-        instance=recipe,
-        context={'request': request},
+    elif request.method == 'DELETE':
+        recipe.delete()
+        return Response(
+            status=status.HTTP_204_NO_CONTENT,
         )
 
-    if recipe:
-        return Response(data=serializer.data)
-    else:
-        return Response({
-            "details": "not found",
-        }, status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view()
