@@ -19,6 +19,9 @@ CSRF_TRUSTED_ORIGINS = ''
 # 1 = True, 0 = False
 SELENIUM_HEADLESS = 1
 
+# Number of objetos in DRF
+PAGE_SIZE = ''
+
 # ------ DATABASE SETTINGS ------
 # FROM SQLite
 DATABASE_ENGINE = 'django.db.backends.sqlite3'
