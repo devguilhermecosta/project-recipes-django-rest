@@ -3,11 +3,21 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework.request import HttpRequest
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework import status
 from django.shortcuts import get_object_or_404  # noqa: F401
+from django.db.models.query import QuerySet
 from recipes.models import Recipe
 from recipes.serializers import RecipeSerializer, TagSerializer
 from tag.models import Tag
+from ..permissions import IsOwner
 import os
+
+
+"""
+criar a documentação sobre a instalação do JWT;
+criar a documentação sobre autenticação e permissões.
+"""
 
 
 class RecipeApiV2Pagination(PageNumberPagination):
@@ -18,6 +28,56 @@ class RecipeApiV2View(ModelViewSet):
     queryset = Recipe.objects.get_published()
     serializer_class = RecipeSerializer
     pagination_class = RecipeApiV2Pagination
+    permission_classes = [
+        IsAuthenticatedOrReadOnly,
+        ]
+
+    def get_object(self) -> Recipe:
+        pk: int = self.kwargs.get('pk', '')
+
+        obj: Recipe = get_object_or_404(
+            self.get_queryset(),
+            pk=pk,
+        )
+        self.check_object_permissions(self.request, obj)
+        return obj
+
+    def get_queryset(self, *args, **kwargs) -> QuerySet:
+        qs: QuerySet = super().get_queryset(*args, **kwargs)
+
+        query_params: dict = self.request.query_params
+
+        category_id: str = query_params.get('category_id', '')
+
+        if category_id != '' and category_id.isnumeric():
+            qs = qs.filter(category_id=category_id)
+
+        print('Query Strings: ', self.request.query_params)
+        print('kwargs: ', self.kwargs)
+
+        return qs
+
+    def get_permissions(self):
+        if self.request.method in ['PATCH', 'DELETE']:
+            return [IsOwner(), ]
+        return super().get_permissions()
+
+    def partial_update(self, request, *args, **kwargs) -> Response:
+        recipe: Recipe = self.get_object()
+        serializer: RecipeSerializer = RecipeSerializer(
+            instance=recipe,
+            many=False,
+            data=request.data,
+            context={'request': request},
+            partial=True,
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(
+            serializer.data,
+            status=status.HTTP_201_CREATED,
+        )
 
 
 @api_view()

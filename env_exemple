@@ -7,6 +7,9 @@ PER_PAGE_USER = 6
 # Secret-Key for Django
 SECRET_KEY = ''
 
+# Secret-Key for JWT
+SECRET_KEY_JWT = ''
+
 # 0 = True, 1 = False
 DEBUG = 0
 
