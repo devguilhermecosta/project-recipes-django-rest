@@ -26,6 +26,16 @@ class RecipeApiV2View(ModelViewSet):
         IsAuthenticatedOrReadOnly,
         ]
 
+    # permitir somente métodos específicos
+    http_method_names = [
+        'get',
+        'post',
+        'patch',
+        'delete',
+        'options',
+        'head',
+    ]
+
     def get_object(self) -> Recipe:
         pk: int = self.kwargs.get('pk', '')
 
