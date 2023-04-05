@@ -6,6 +6,7 @@ app_name: str = 'authors'
 
 author_simple_router = SimpleRouter()
 author_simple_router.register(
+     'api',
      viewset=views.AuthorViewSet,
      basename='author-api',
      )
