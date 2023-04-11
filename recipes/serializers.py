@@ -16,7 +16,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         model = Recipe
         fields = [
             'id',
-            'public',
+            # 'public',
             'title',
             'description',
             'slug',
@@ -24,7 +24,8 @@ class RecipeSerializer(serializers.ModelSerializer):
             'servings_unit',
             'preparation_steps',
             'preparation_steps_is_html',
-            'preparation',
+            'preparation_time',
+            'preparation_time_unit',
             'created_at',
             'updated_at',
             'cover',
@@ -39,7 +40,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     Vamos usar como exemplo o field is_published.
     Usar o atributo 'source' para referenciar o field original
     """
-    public = serializers.BooleanField(source='is_published')
+    # public = serializers.BooleanField(source='is_published', read_only=True)
 
     """
     Como unir dois ou mais fields em um único e novo field.
@@ -47,9 +48,9 @@ class RecipeSerializer(serializers.ModelSerializer):
     Exemplo: get_preparation.
     Você pode colocar qualquer nome usando o atributo method_name.
     """
-    # preparation = serializers.SerializerMethodField(
-    #     method_name='any_method_name',
-    #     )
+    preparation = serializers.SerializerMethodField(
+        method_name='any_method_name',
+        )
 
     """
     Serializando fields do tipo foreingkey.
@@ -69,9 +70,6 @@ class RecipeSerializer(serializers.ModelSerializer):
     """
     category = serializers.StringRelatedField()
     author = serializers.StringRelatedField()
-    preparation = serializers.IntegerField(
-        source='preparation_time'
-    )
 
     """
     Serializando objetos com relationship type many-to-many.
@@ -160,8 +158,8 @@ class RecipeSerializer(serializers.ModelSerializer):
         default='',
     )
 
-    # def any_method_name(self, recipe: Recipe):
-    #     return f'{recipe.preparation_time} {recipe.preparation_time_unit}'
+    def any_method_name(self, recipe: Recipe):
+        return f'{recipe.preparation_time} {recipe.preparation_time_unit}'
 
     """
     Validando dados do serializer:

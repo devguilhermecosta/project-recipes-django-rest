@@ -13,11 +13,27 @@ class RecipeAPITests(APITestCase, RecipeMixin):
             'recipes:recipe-api-list'
         )
 
-    def make_get_request(self, **kwargs) -> HttpResponse:
+    def make_request(self, **kwargs) -> HttpResponse:
         aditional_url: str = kwargs.pop('page', '')
         return self.client.get(
             self.make_reverse() + aditional_url
         )
+
+    def get_jwt_token(self) -> str:
+        user_data: dict = {
+            'username': 'user',
+            'password': 'password',
+        }
+        self.make_author(**user_data)
+
+        response: HttpResponse = self.client.post(
+            reverse('recipes:token_obtain_pair'),
+            data={
+                **user_data,
+            }
+        )
+
+        return response.data.get('access')
 
     def test_recipe_api_list_url_is_correct(self) -> None:
         url: str = self.make_reverse()
@@ -28,7 +44,7 @@ class RecipeAPITests(APITestCase, RecipeMixin):
         )
 
     def test_recipe_api_list_returns_status_code_200(self) -> None:
-        response: HttpResponse = self.make_get_request()
+        response: HttpResponse = self.make_request()
 
         self.assertEqual(
             response.status_code,
@@ -39,7 +55,7 @@ class RecipeAPITests(APITestCase, RecipeMixin):
     def test_recipe_api_load_correct_quantity_of_recipes(self) -> None:
         number_of_recipes: int = 7
         self.make_recipe_in_batch(qty=number_of_recipes)
-        response: HttpResponse = self.make_get_request()
+        response: HttpResponse = self.make_request()
 
         num_of_recipes_loaded: int = len(response.data.get('results'))
         total_recipes: int = response.data.get('count')
@@ -57,7 +73,7 @@ class RecipeAPITests(APITestCase, RecipeMixin):
     def test_recipes_api_is_paginated(self) -> None:
         self.make_recipe_in_batch(qty=10)
 
-        response: HttpResponse = self.make_get_request(page='?page=2')
+        response: HttpResponse = self.make_request(page='?page=2')
 
         number_of_loaded_recipes: int = len(response.data.get('results'))
 
@@ -72,7 +88,7 @@ class RecipeAPITests(APITestCase, RecipeMixin):
         recipe_not_published.is_published = False
         recipe_not_published.save()
 
-        response: HttpResponse = self.make_get_request()
+        response: HttpResponse = self.make_request()
         data: ReturnList = response.data.get('results')
 
         num_of_loaded_recipes: int = len(data)
@@ -102,7 +118,7 @@ class RecipeAPITests(APITestCase, RecipeMixin):
         only_one_recipe.save()
 
         # we search all recipes with the category 'category'
-        response: HttpResponse = self.make_get_request(
+        response: HttpResponse = self.make_request(
             page=f'?category_id={category.id}'
         )
         data: ReturnList = response.data.get('results')
@@ -114,3 +130,39 @@ class RecipeAPITests(APITestCase, RecipeMixin):
             num_of_loaded_recipes,
             9,
         )
+
+    def test_recipe_api_create_recipe_is_not_allowed_if_user_not_authenticated(self) -> None:  # noqa: E501
+        response: HttpResponse = self.client.post(
+            self.make_reverse(),
+        )
+
+        self.assertEqual(
+            response.status_code,
+            401,
+        )
+
+    def test_jwt(self) -> None:
+        data: dict = {
+            'title': 'this is the new title test',
+            'description': 'thi is the description',
+            'slug': 'this-is-the-slug',
+            'servings': '2',
+            'servings_unit': 'peoples',
+            'preparation_steps': 'this is the preparation steps',
+            'preparation': '45 minuts',
+        }
+
+        response: HttpResponse = self.client.post(
+            self.make_reverse(),
+            data=data,
+            HTTP_AUTHORIZATION=f'Bearer {self.get_jwt_token()}'
+        )
+        ...
+
+    """
+        o erro sobre 'nested fields' ... 'create()' ocorre por conta
+        dos fields personalizados no serializer.
+        Modificar ou excluir esses fields corrige esse erro.
+        Por exemplo o field personalizado 'preparation', que é uma
+        junção de dois fields.
+    """

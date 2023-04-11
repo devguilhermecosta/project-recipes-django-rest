@@ -17,6 +17,8 @@ recipes_api_v2_router.register(
      basename='recipe-api',
 )
 
+# print(recipes_api_v2_router.urls)
+
 urlpatterns = [
     path('', views.RecipeHomeBase.as_view(), name='home'),
     path('recipe/search/', views.RecipeSearch.as_view(), name='search'),
