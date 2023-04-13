@@ -11,3 +11,4 @@ from .assets import *
 from .messages import *
 from .django_deboog_toolbar import *
 from .d_rest_framework import *
+from .cors_allowed import *
